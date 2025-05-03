@@ -1,1 +1,1 @@
-just notes learning threading
+general practice on random topics
