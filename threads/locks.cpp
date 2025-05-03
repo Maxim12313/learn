@@ -35,16 +35,27 @@ struct Data {
         lock(a.mut, b.mut);
         lock_guard<mutex> g1(a.mut, adopt_lock);
         lock_guard<mutex> g2(b.mut, adopt_lock);
-        swap(a.val, b.val);
+        std::swap(a.val, b.val);
     }
 };
 
 Data a, b;
+int i;
+mutex mut;
 
-void swapper(int &i) {
-    for (; i < 10000; i++) {
+void swapper() {
+    while (true) {
+        int j;
+        lock_guard<mutex> guard(mut);
+        {
+            if (i >= 1000)
+                break;
+            j = i;
+            i++;
+        }
+
         swap(a, b);
-        if (i % 2 == 0) {
+        if (j % 2 == 0) {
             assert(a.val == 1 && b.val == 100);
         } else {
             assert(b.val == 1 && a.val == 100);
@@ -53,11 +64,13 @@ void swapper(int &i) {
 }
 
 int main() {
+    i = 0;
     a.val = 100;
     b.val = 1;
-    int i = 0;
-    for (int j = 0; j < 5; j++) {
-        thread t(swapper, ref(i));
-        t.detach();
+    vector<thread> threads;
+    for (int j = 0; j < 10; j++) {
+        threads.emplace_back(swapper);
     }
+    for (thread &t : threads)
+        t.join();
 }
