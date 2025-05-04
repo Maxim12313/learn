@@ -1,8 +1,10 @@
 #include <algorithm>
+#include <chrono>
 #include <cmath>
 #include <cstdint>
 #include <iostream>
 #include <numeric>
+#include <ratio>
 #include <thread>
 #include <vector>
 
@@ -16,7 +18,7 @@ int64_t allAcc(vector<int> &nums) {
     // int64_t total = 0;
     // thread t(singleAcc, 0, nums.size(), std::ref(total), std::ref(nums));
     // t.join();
-    uint per = 5;
+    uint per = sqrt(nums.size());
     uint desired = ceil(nums.size() / float(per));
     uint allowed = thread::hardware_concurrency();
     uint count = min(allowed, desired);
@@ -36,19 +38,45 @@ int64_t allAcc(vector<int> &nums) {
 }
 
 void test() {
-    cout << "hello world\n";
+    int n;
+    cin >> n;
+    vector<int> nums(n);
+    for (int &val : nums)
+        val = rand();
+
+    auto t1 = chrono::high_resolution_clock::now();
+    int64_t real = 0;
+    singleAcc(0, n, real, nums);
+    auto t2 = chrono::high_resolution_clock::now();
+    int time1 = chrono::duration_cast<chrono::milliseconds>(t2 - t1).count();
+
+    auto t3 = chrono::high_resolution_clock::now();
+    int64_t got = allAcc(nums);
+    auto t4 = chrono::high_resolution_clock::now();
+    int time2 = chrono::duration_cast<chrono::milliseconds>(t4 - t3).count();
+
+    cout << time1 << " " << time2 << "\n";
 }
 
 int main() {
-    while (true) {
-        cout << "specify: n <n elements>\n";
-        int n;
-        cin >> n;
-        vector<int> nums(n);
-        for (int &val : nums)
-            cin >> val;
-        int64_t real = accumulate(begin(nums), end(nums), 0LL);
-        int64_t got = allAcc(nums);
-        cout << real << " " << got << "\n";
-    }
+    test();
+    // while (true) {
+    //     cout << "specify: n <n elements>\n";
+    //     int n;
+    //     cin >> n;
+    //     vector<int> nums(n);
+    //     for (int &val : nums)
+    //         cin >> val;
+    //     auto t1 = chrono::high_resolution_clock::now();
+    //     int64_t real = accumulate(begin(nums), end(nums), 0LL);
+    //     auto t2 = chrono::high_resolution_clock::now();
+    //     int time1 = (t2 - t1).count();
+    //
+    //     auto t3 = chrono::high_resolution_clock::now();
+    //     int64_t got = allAcc(nums);
+    //     auto t4 = chrono::high_resolution_clock::now();
+    //     int time2 = (t4 - t3).count();
+    //
+    //     cout << time1 << " " << time2 << "\n";
+    // }
 }
