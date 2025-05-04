@@ -60,3 +60,5 @@ Example:
 * Observed: Of that, 9 ms is disk I/O.
 * Suggestion: Configure the application to cache I/O in memory, with expected DRAM latency around ~10 μs.
 * Estimated gain: 10 ms → 1.01 ms (10 ms - 9 ms + 10 μs) = ~9x gain
+
+
