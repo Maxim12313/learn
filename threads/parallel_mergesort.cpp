@@ -1,4 +1,5 @@
 #include <cassert>
+#include <chrono>
 #include <future>
 #include <iostream>
 #include <vector>
@@ -44,6 +45,11 @@ vector<int> parallel_mergesort(vector<int> nums) {
     if (nums.size() <= 1)
         return nums;
 
+    uint threads = thread::hardware_concurrency();
+    if (nums.size() <= 1000 * threads || threads < 2) {
+        return mergesort(nums);
+    }
+
     int mid = nums.size() / 2;
 
     vector<int> lo(begin(nums), begin(nums) + mid);
@@ -65,7 +71,15 @@ int main() {
     for (int &val : A) {
         val = rand();
     }
-    // sort(begin(A), end(A));
-    vector<int> test = mergesort(A);
-    // assert(test == actual);
+    auto t1 = chrono::high_resolution_clock::now();
+    vector<int> test1 = mergesort(A);
+    auto t2 = chrono::high_resolution_clock::now();
+    int time1 = chrono::duration_cast<chrono::milliseconds>(t2 - t1).count();
+
+    auto t3 = chrono::high_resolution_clock::now();
+    vector<int> test2 = parallel_mergesort(A);
+    auto t4 = chrono::high_resolution_clock::now();
+    int time2 = chrono::duration_cast<chrono::milliseconds>(t4 - t3).count();
+
+    cout << time1 << " " << time2 << "\n";
 }
