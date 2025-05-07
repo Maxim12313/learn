@@ -46,7 +46,7 @@ vector<int> parallel_mergesort(vector<int> nums) {
         return nums;
 
     uint threads = thread::hardware_concurrency();
-    if (nums.size() <= 1000 * threads || threads < 2) {
+    if (nums.size() <= 1000 * threads || threads < 1) {
         return mergesort(nums);
     }
 
@@ -56,10 +56,8 @@ vector<int> parallel_mergesort(vector<int> nums) {
     vector<int> hi(begin(nums) + mid, end(nums));
 
     auto lfuture = async(parallel_mergesort, std::move(lo));
-    auto rfuture = async(parallel_mergesort, std::move(hi));
-
+    hi = parallel_mergesort(std::move(hi));
     lo = lfuture.get();
-    hi = rfuture.get();
 
     return merge(std::move(lo), std::move(hi));
 }

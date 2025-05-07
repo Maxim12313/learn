@@ -63,5 +63,6 @@ if less threads than cores, blocking thread means wasted potential.
 if anticipate much blocking, can add additional thread to take its place
 or might have work queue and blocking threads can instead start doing work off the queue
 
-
+# responsiveness
+separate main thread with tasks, gui
 
