@@ -1,0 +1,42 @@
+
+  CPU bound work vs IO bound work                                                 
+                                                                                  
+  polling vs blocking                                                             
+                                                                                  
+  CSP communicating sequential process, where threads separate                    
+                                                                                  
+  oversubscription: too many threads that context switch outweights performance   
+  gain                                                                            
+                                                                                  
+  per thread cache. if read and write over protected data in same step, cache is  
+  invalidated every time                                                          
+  high contention, processors waiting for each other                              
+  cache ping pong                                                                 
+                                                                                  
+  # mesi                                                                          
+                                                                                  
+  mesi cache coherence protocol                                                   
+  modified, exclusive, shared, invalid                                            
+  writer: shared -> modified                                                      
+  readers: shared -> invalid                                                      
+  modified like dirty bit for write backjk                                        
+                                                                                  
+  # false sharing                                                                 
+                                                                                  
+  when cache line is shared even though no data really is, this is false sharing  
+  causes repeated cache invalidation on thread actions that might have entirely   
+  separate data                                                                   
+  restructure memory to group data by what each running thread accesses           
+  similarly, distance data for different threads                                  
+  want closer also so each thread invalidates less cache lines and has to load    
+  fewer                                                                           
+                                                                                  
+  if more threads than cores, os might end up moving thread to different cores,   
+  this requires that the l1/l2 cache be rewarmed up each time                     
+                                                                                  
+  # oversubscription                                                              
+                                                                                  
+  when ready threads > available threads. lose parallel excecution for excess and 
+  starts agressive context switching                                              
+  this will exacerbate false sharing also because more often switching            
+
