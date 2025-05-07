@@ -1,3 +1,6 @@
+sentinel value
+flags
+
 CPU bound work vs IO bound work
 
 polling vs blocking
@@ -32,6 +35,33 @@ this requires that the l1/l2 cache be rewarmed up each time
 when ready threads > available threads. lose parallel excecution for excess and starts agressive context switching
 this will exacerbate false sharing also because more often switching
 
-Inline equation: $\underset{i\in [n]}{\sum}\frac{1}{2^i}$
+# pointer data structure
+bad for cache on access but because of this, can be better for plain traversal of pointers
+even if value modified, can just look at pointer
+```
+struct Node {
+    Data *data;
+    Node *next;
+};
+
+```
+# exception safety
+use futures and packaged_task, will propogate up exception if fail
+async also works
+
+
+# performance
+performance gain: $\frac{1}{f_s+\frac{1-f_s}{n}}$, where $f_n$ gives concurrent duratioin and $n$ is num threads
+
+scalability is about reducing the time it takes to perform an action or increasing
+the amount of data that can be processed in a given time as more processors are added
+
+throughput or latency
+you can hide waiting by giving idle threadss work to do
+
+if less threads than cores, blocking thread means wasted potential.
+if anticipate much blocking, can add additional thread to take its place
+or might have work queue and blocking threads can instead start doing work off the queue
+
 
 
