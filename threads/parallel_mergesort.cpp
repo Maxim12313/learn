@@ -55,8 +55,8 @@ vector<int> parallel_mergesort(vector<int> nums) {
     vector<int> lo(begin(nums), begin(nums) + mid);
     vector<int> hi(begin(nums) + mid, end(nums));
 
-    auto lfuture = async(launch::async, parallel_mergesort, std::move(lo));
-    auto rfuture = async(launch::async, parallel_mergesort, std::move(hi));
+    auto lfuture = async(parallel_mergesort, std::move(lo));
+    auto rfuture = async(parallel_mergesort, std::move(hi));
 
     lo = lfuture.get();
     hi = rfuture.get();

@@ -3,6 +3,7 @@
 #include <cmath>
 #include <cstdint>
 #include <exception>
+#include <future>
 #include <iostream>
 #include <iterator>
 #include <list>
@@ -17,7 +18,10 @@ using namespace std;
 class ThreadsafeStack {
 private:
     stack<int> st;
-    mutex mut;
+    mutable mutex mut;
+    condition_variable cond;
+
+public:
     ThreadsafeStack() {}
     ThreadsafeStack(const ThreadsafeStack &other) {
         lock_guard<mutex> guard(mut);
@@ -25,24 +29,44 @@ private:
     }
     ThreadsafeStack &operator=(const ThreadsafeStack &other) = delete;
 
-public:
-    bool empty() const { return st.empty(); }
+    bool empty() const {
+        lock_guard<mutex> guard(mut);
+        return st.empty();
+    }
 
     void push(int val) {
         lock_guard<mutex> guard(mut);
         st.push(val);
+        cond.notify_one();
     }
 
-    void pop(int &val) {
+    void wait_pop(int &val) {
+        unique_lock<mutex> guard(mut);
+        cond.wait(guard, [this]() { return !st.empty(); });
+        val = std::move(st.top());
+        st.pop();
+    }
+
+    shared_ptr<int> wait_pop() {
+        unique_lock<mutex> guard(mut);
+        cond.wait(guard, [this]() { return !st.empty(); });
+        shared_ptr<int> res(make_shared<int>(st.top()));
+        st.pop();
+        return res;
+    }
+
+    void try_pop(int &val) {
         lock_guard<mutex> guard(mut);
-        assert(!st.empty());
+        if (st.empty())
+            return;
         val = st.top();
         st.pop();
     }
 
-    shared_ptr<int> pop() {
+    shared_ptr<int> try_pop() {
         lock_guard<mutex> guard(mut);
-        assert(!st.empty());
+        if (st.empty())
+            return shared_ptr<int>();
         shared_ptr<int> res(make_shared<int>(st.top()));
         st.pop();
         return res;
