@@ -1,3 +1,4 @@
+# Misc
 web response time = dns latency, tcp connection latency, tcp data transmission time
 request latency, etc modify latency to specify
 in network transfer time: hops, rate of drops, retransmissions, complicated
@@ -30,6 +31,7 @@ CPUs: Sockets, cores, hardware threads (virtual CPUs)
 RED, for every service, check request rate, errors, and duration
 workload characterization, who why what how
 
+# Concrete
 Performance mantras
 1. Don’t do it: Eliminate unnecessary work.
 2. Do it, but don’t do it again: Caching.
@@ -61,4 +63,6 @@ Example:
 * Suggestion: Configure the application to cache I/O in memory, with expected DRAM latency around ~10 μs.
 * Estimated gain: 10 ms → 1.01 ms (10 ms - 9 ms + 10 μs) = ~9x gain
 
+# Considerations
+Everything is a tradeoff!
 

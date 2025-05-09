@@ -41,12 +41,14 @@ vector<int> mergesort(vector<int> nums) {
     return merge(std::move(lo), std::move(hi));
 }
 
+static constexpr int min_per_thread = 1000;
+
 vector<int> parallel_mergesort(vector<int> nums) {
     if (nums.size() <= 1)
         return nums;
 
     uint threads = thread::hardware_concurrency();
-    if (nums.size() <= 1000 * threads || threads < 1) {
+    if (nums.size() <= 2 * min_per_thread || threads < 1) {
         return mergesort(nums);
     }
 

@@ -66,3 +66,26 @@ or might have work queue and blocking threads can instead start doing work off t
 # responsiveness
 separate main thread with tasks, gui
 
+# reduce ping pong
+```
+struct alignas(64) Item {
+
+};
+```
+to avoid false sharing by putting on its own cache line
+
+favor local storage and sync later join
+
+make more fine grianed, less threads share lock
+
+avoid centralized counters, instead sum across periodically
+
+for busy waiting with polling, use exponential back off with
+
+pin threads, take advantage of numa
+
+acquire release pairs that need to synch, so less global updates
+
+
+
+
