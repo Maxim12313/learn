@@ -20,7 +20,7 @@ void matching_run(Connection &conn) {
 int main() {
     running.store(true);
     RingBuffer<Order, MAX_EVENTS> to_engine;
-    RingBuffer<Order, MAX_EVENTS> to_port;
+    RingBuffer<Match, MAX_EVENTS> to_port;
 
     int port_wakeup_fd = eventfd(0, EFD_NONBLOCK);
     Connection conn{to_engine, to_port, port_wakeup_fd};

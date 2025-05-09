@@ -43,10 +43,22 @@ class Port {
         uint64_t dummy;
         read(conn.port_wakeup_fd, &dummy, sizeof(dummy)); // clear wake
         vector<int> &fds = clients.get_data();
-        for (int fd : fds) {
-            char msg[] = "hello";
-            send(fd, msg, strlen(msg) + 1, 0);
+        cout << "sending\n";
+        while (true) {
+            auto res = conn.to_port.pop();
+            if (!res.has_value())
+                break;
+            Match &m = *res;
+            // can move this to class field
+            char msg[1024];
+            int length =
+                snprintf(msg, sizeof(msg), "%d bought %d for %f from %d",
+                         m.buyer_id, m.qty, m.price, m.seller_id);
+            for (int fd : fds) {
+                send(fd, msg, length, 0);
+            }
         }
+        cout << "finished\n";
     }
 
     void acceptClient() {

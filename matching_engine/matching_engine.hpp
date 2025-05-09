@@ -1,6 +1,7 @@
 #pragma once
 #include "config.hpp"
 #include "connection.hpp"
+#include "match.hpp"
 #include "order.hpp"
 #include <iostream>
 #include <list>
@@ -9,12 +10,6 @@
 #include <vector>
 
 extern atomic<bool> running;
-
-struct Match {
-    Order a, b;
-    int qty;
-    float price;
-};
 
 float get_match_price(float buy_price, float sell_price, bool buy_is_recent) {
     return buy_is_recent ? sell_price : buy_price;
@@ -50,7 +45,8 @@ private:
                 sell_order.qty -= change;
 
                 // order after changes, can easily recover knowing change
-                matches.emplace_back(buy_order, sell_order, change, price);
+                matches.emplace_back(buy_order.user_id, sell_order.user_id,
+                                     change, price);
 
                 if (!buy_order.qty)
                     buys.pop_front();
@@ -79,13 +75,11 @@ private:
     }
 
     void broadcast_matches(vector<Match> &matches) {
+        for (Match &match : matches) {
+            conn.to_port.push(match);
+        }
         uint64_t garb = 1;
         write(conn.port_wakeup_fd, &garb, sizeof(garb));
-        cout << "matches: " << matches.size() << "\n";
-        for (auto [a, b, qty, price] : matches) {
-            cout << a.price << " " << b.price << " " << qty << " " << price
-                 << "\n";
-        }
     }
     void cancel_order(list<Order>::iterator it) {}
 
